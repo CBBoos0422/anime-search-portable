@@ -2,7 +2,7 @@
   "name": "anime-search-portable",
   "version": "1.2.0",
   "private": true,
-  "description": "Portable Anime Search desktop-style app with Nyaa, AnimeGarden and local qBittorrent management.",
+  "description": "Windows anime search and download manager powered by Nyaa, AnimeGarden, and qBittorrent.",
   "license": "MIT",
   "repository": {
     "type": "git",
