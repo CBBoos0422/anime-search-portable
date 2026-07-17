@@ -25,7 +25,7 @@ const {
 
 const HOST = '127.0.0.1'
 const PORT = Number(process.env.PORT) || 4173
-const APP_VERSION = '1.2.0'
+const APP_VERSION = '1.2.1'
 const PUBLIC_DIR = path.join(__dirname, 'public')
 const MAX_BODY_SIZE = 32 * 1024
 const APP_ROOT = path.resolve(__dirname, '..')

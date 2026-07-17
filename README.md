@@ -7,6 +7,12 @@ A lightweight Windows app for searching Nyaa and AnimeGarden, copying magnet lin
 
 ![Anime Search light theme](docs/images/anime-search-home.png)
 
+## Portable Download
+
+[Download `Anime-Search-Windows-x64.zip`](https://github.com/CBBoos0422/anime-search-portable/releases/latest/download/Anime-Search-Windows-x64.zip) and its [SHA-256 file](https://github.com/CBBoos0422/anime-search-portable/releases/latest/download/Anime-Search-Windows-x64.zip.sha256).
+
+Extract the complete ZIP to a writable folder, then double-click `Open-Anime-Search.vbs`. Node.js and qBittorrent are included.
+
 ## Features
 
 - Search Nyaa, AnimeGarden, or both.
@@ -14,7 +20,7 @@ A lightweight Windows app for searching Nyaa and AnimeGarden, copying magnet lin
 - Choose download folders and manage tasks from the web interface.
 - Browse grouped files, launch media, and manage Trackers.
 
-## Quick Start
+## Run from Source
 
 Requirements: Windows 10/11 x64 and Node.js 24.
 

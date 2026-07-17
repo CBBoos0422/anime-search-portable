@@ -1,6 +1,6 @@
 # Anime Search Third-Party Notices
 
-Anime Search 1.2.0 invokes the following third-party software as separate components. Complete license texts are available in the `licenses` directory.
+Anime Search 1.2.1 invokes the following third-party software as separate components. Complete license texts are available in the `licenses` directory.
 
 ## qBittorrent 5.2.3
 

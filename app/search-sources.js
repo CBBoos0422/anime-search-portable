@@ -138,7 +138,7 @@ async function searchAnimeGarden (options, fetchImpl = fetch) {
   if (String(options.category || '').startsWith('1_')) url.searchParams.set('type', '动画')
 
   const response = await fetchImpl(url, {
-    headers: { Accept: 'application/json', 'User-Agent': 'Anime-Search/1.2' },
+    headers: { Accept: 'application/json', 'User-Agent': 'Anime-Search/1.2.1' },
     signal: AbortSignal.timeout(15000)
   })
   if (!response.ok) throw new Error(`AnimeGarden API returned HTTP ${response.status}.`)
@@ -165,7 +165,7 @@ async function resolveTorrentUrl (item, fetchImpl = fetch) {
   const ref = validateProviderReference(item.provider, item.providerId)
   const url = new URL(`/detail/${encodeURIComponent(ref.provider)}/${encodeURIComponent(ref.providerId)}`, ANIME_GARDEN_API)
   const response = await fetchImpl(url, {
-    headers: { Accept: 'application/json', 'User-Agent': 'Anime-Search/1.2' },
+    headers: { Accept: 'application/json', 'User-Agent': 'Anime-Search/1.2.1' },
     signal: AbortSignal.timeout(15000)
   })
   if (!response.ok) throw new Error(`AnimeGarden detail API returned HTTP ${response.status}.`)
@@ -214,7 +214,7 @@ async function fetchTorrentPayload (url, fetchImpl, network = {}) {
           proxy: proxyUrl ? proxyUrlToAxiosConfig(proxyUrl) : false,
           headers: {
             Accept: 'application/x-bittorrent, application/octet-stream;q=0.9',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Anime-Search/1.2'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Anime-Search/1.2.1'
           }
         })
         break
@@ -235,7 +235,7 @@ async function fetchTorrentPayload (url, fetchImpl, network = {}) {
 
   const response = await fetchImpl(parsed, {
     redirect: 'follow',
-    headers: { Accept: 'application/x-bittorrent, application/octet-stream;q=0.9', 'User-Agent': 'Anime-Search/1.2' },
+    headers: { Accept: 'application/x-bittorrent, application/octet-stream;q=0.9', 'User-Agent': 'Anime-Search/1.2.1' },
     signal: AbortSignal.timeout(20000)
   })
   if (!response.ok) throw new Error(`Torrent download failed (HTTP ${response.status}).`)

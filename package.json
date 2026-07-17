@@ -1,6 +1,6 @@
 {
   "name": "anime-search-portable",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": true,
   "description": "Windows anime search and download manager powered by Nyaa, AnimeGarden, and qBittorrent.",
   "license": "MIT",
