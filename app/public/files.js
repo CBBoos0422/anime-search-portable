@@ -55,7 +55,7 @@ function showStatus (title, detail, type = 'normal') {
 
 async function playFile (button, hash, index) {
   button.disabled = true
-  button.textContent = '正在打开…'
+  button.textContent = 'Opening…'
   try {
     const response = await fetch('/api/play', {
       method: 'POST',
@@ -63,13 +63,13 @@ async function playFile (button, hash, index) {
       body: JSON.stringify({ hash, index })
     })
     const data = await response.json()
-    if (!response.ok) throw new Error(data.error || '无法打开播放器。')
-    showToast('已交给系统默认播放器')
+    if (!response.ok) throw new Error(data.error || 'Unable to open the media player.')
+    showToast('Opened with the system default player')
   } catch (error) {
     showToast(error.message, 'error')
   } finally {
     button.disabled = false
-    button.textContent = '播放'
+    button.textContent = 'Play'
   }
 }
 
@@ -95,7 +95,7 @@ function createFileRow (torrent, file) {
     const playButton = document.createElement('button')
     playButton.className = 'play-file-button'
     playButton.type = 'button'
-    playButton.textContent = file.playable ? '播放' : '尚未完成'
+    playButton.textContent = file.playable ? 'Play' : 'Incomplete'
     playButton.disabled = !file.playable
     if (file.playable) {
       playButton.addEventListener('click', () => playFile(playButton, torrent.hash, file.index))
@@ -137,14 +137,14 @@ function createTorrentCard (torrent, visibleFiles) {
 }
 
 function renderLibrary () {
-  const query = filterInput.value.trim().toLocaleLowerCase('zh-CN')
+  const query = filterInput.value.trim().toLocaleLowerCase('en')
   const grouped = new Map()
   const visibleTorrentHashes = new Set()
   let visibleFileCount = 0
   let visiblePlayableCount = 0
 
   const addToResource = (resourceName, torrent, file) => {
-    const name = resourceName || torrent.resourceName || torrent.name || '未命名资源'
+    const name = resourceName || torrent.resourceName || torrent.name || 'Unnamed Release'
     if (!grouped.has(name)) grouped.set(name, [])
     const entries = grouped.get(name)
     let entry = entries.find((candidate) => candidate.torrent.hash === torrent.hash)
@@ -156,10 +156,10 @@ function renderLibrary () {
   }
 
   libraryItems.forEach((torrent) => {
-    const torrentSearchText = `${torrent.name} ${torrent.resourceName || ''}`.toLocaleLowerCase('zh-CN')
+    const torrentSearchText = `${torrent.name} ${torrent.resourceName || ''}`.toLocaleLowerCase('en')
     const torrentMatches = torrentSearchText.includes(query)
     const visibleFiles = torrent.files.filter((file) => {
-      const fileSearchText = `${file.name} ${file.resourceName || ''}`.toLocaleLowerCase('zh-CN')
+      const fileSearchText = `${file.name} ${file.resourceName || ''}`.toLocaleLowerCase('en')
       return !query || torrentMatches || fileSearchText.includes(query)
     })
     if (query && !torrentMatches && visibleFiles.length === 0) return
@@ -182,12 +182,12 @@ function renderLibrary () {
   groupsContainer.replaceChildren()
 
   if (grouped.size === 0) {
-    showStatus(query ? '没有匹配的文件' : '文件库暂时为空', query ? '请尝试其他筛选文字。' : '完成搜索并添加下载任务后，文件会出现在这里。')
+    showStatus(query ? 'No matching files' : 'Your library is empty', query ? 'Try a different filter.' : 'Files will appear here after you add a download task.')
     return
   }
 
   const names = [...grouped.keys()].sort((left, right) => {
-    return left.localeCompare(right, 'zh-CN', { numeric: true, sensitivity: 'base' })
+    return left.localeCompare(right, 'en', { numeric: true, sensitivity: 'base' })
   })
 
   names.forEach((resourceName) => {
@@ -200,7 +200,7 @@ function renderLibrary () {
     const count = document.createElement('span')
     const entries = grouped.get(resourceName)
     const resourceFileCount = entries.reduce((total, entry) => total + entry.visibleFiles.length, 0)
-    count.textContent = `${resourceFileCount} 个文件 · ${entries.length} 个任务`
+    count.textContent = `${resourceFileCount} file${resourceFileCount === 1 ? '' : 's'} · ${entries.length} task${entries.length === 1 ? '' : 's'}`
     heading.append(title, count)
     group.append(heading)
     entries.forEach(({ torrent, visibleFiles }) => {
@@ -215,27 +215,27 @@ function renderLibrary () {
 
 async function refreshLibrary () {
   refreshButton.disabled = true
-  refreshButton.textContent = '正在刷新…'
+  refreshButton.textContent = 'Refreshing…'
   try {
     const response = await fetch('/api/library')
     const data = await response.json()
     if (!response.ok) {
       if (window.AnimeEngine?.handleApiError(response, data)) {
-        updatedLabel.textContent = '下载引擎尚未启用'
-        showStatus('尚未启用下载引擎', '确认许可后即可读取和管理下载文件。')
+        updatedLabel.textContent = 'Download engine not enabled'
+        showStatus('Download engine not enabled', 'Confirm the license notice to browse and manage downloaded files.')
         return
       }
-      throw new Error(data.error || '无法读取文件库。')
+      throw new Error(data.error || 'Unable to load the file library.')
     }
     libraryItems = data.items
-    updatedLabel.textContent = `更新于 ${new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}`
+    updatedLabel.textContent = `Updated at ${new Date().toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' })}`
     renderLibrary()
   } catch (error) {
-    updatedLabel.textContent = '读取失败'
-    showStatus('无法读取文件库', error.message, 'error')
+    updatedLabel.textContent = 'Load failed'
+    showStatus('Unable to load the file library', error.message, 'error')
   } finally {
     refreshButton.disabled = false
-    refreshButton.textContent = '刷新文件库'
+    refreshButton.textContent = 'Refresh Library'
   }
 }
 

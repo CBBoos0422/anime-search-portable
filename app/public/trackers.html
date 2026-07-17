@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <title>Tracker 管理 · Anime Search</title>
+  <title>Tracker Manager · Anime Search</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
@@ -14,28 +14,28 @@
     <header class="hero">
       <div>
         <p class="eyebrow">TRACKER MANAGER</p>
-        <h1>Tracker 管理</h1>
-        <p class="subtitle">为新任务和已有任务配置动漫及公共 BT Tracker。</p>
+        <h1>Tracker Manager</h1>
+        <p class="subtitle">Configure anime-focused and public BitTorrent Trackers for new and existing tasks.</p>
       </div>
-      <nav class="top-nav" aria-label="主导航">
-        <a href="/">搜索下载</a>
-        <a href="/files.html">分类文件库</a>
-        <a class="active" href="/trackers.html">Tracker 管理</a>
-        <button class="exit-app-button" type="button">退出程序</button>
+      <nav class="top-nav" aria-label="Main navigation">
+        <a href="/">Search &amp; Download</a>
+        <a href="/files.html">File Library</a>
+        <a class="active" href="/trackers.html">Tracker Manager</a>
+        <button class="exit-app-button" type="button">Exit App</button>
       </nav>
     </header>
 
-    <section class="tracker-summary-grid" aria-label="Tracker 状态">
+    <section class="tracker-summary-grid" aria-label="Tracker status">
       <article class="summary-card">
-        <span>下载引擎</span>
-        <strong id="tracker-engine-state">正在读取</strong>
+        <span>Download Engine</span>
+        <strong id="tracker-engine-state">Loading</strong>
       </article>
       <article class="summary-card">
-        <span>已配置 Tracker</span>
+        <span>Configured Trackers</span>
         <strong id="configured-count">0</strong>
       </article>
       <article class="summary-card">
-        <span>当前下载任务</span>
+        <span>Current Tasks</span>
         <strong id="torrent-count">0</strong>
       </article>
     </section>
@@ -45,13 +45,13 @@
         <div class="tracker-card-heading">
           <div>
             <p class="eyebrow">RECOMMENDED</p>
-            <h2>常用 Tracker</h2>
+            <h2>Recommended Trackers</h2>
           </div>
-          <button id="use-recommended-button" class="secondary-button" type="button">使用推荐列表</button>
+          <button id="use-recommended-button" class="secondary-button" type="button">Use Recommended List</button>
         </div>
-        <p class="tracker-help">动漫专用节点来自 AnimeGarden 磁链所使用的 Tracker；公共节点用于补充连接来源。</p>
+        <p class="tracker-help">Anime-focused endpoints are used by AnimeGarden magnet links; public endpoints provide additional peer discovery.</p>
         <div id="recommended-trackers" class="recommended-trackers"></div>
-        <button id="refresh-online-button" class="secondary-button online-refresh-button" type="button">从在线每日列表刷新</button>
+        <button id="refresh-online-button" class="secondary-button online-refresh-button" type="button">Refresh from Daily Online List</button>
         <p id="online-source" class="tracker-source-note"></p>
       </article>
 
@@ -59,30 +59,30 @@
         <div class="tracker-card-heading">
           <div>
             <p class="eyebrow">QBITTORRENT</p>
-            <h2>应用到下载引擎</h2>
+            <h2>Apply to Download Engine</h2>
           </div>
         </div>
         <label class="tracker-editor-label" for="tracker-editor">
-          <span>每行一个 Tracker 地址</span>
+          <span>One Tracker URL per line</span>
           <textarea id="tracker-editor" spellcheck="false" placeholder="udp://tracker.example:6969/announce"></textarea>
         </label>
         <label class="tracker-option">
           <input id="enable-future" type="checkbox" checked>
-          <span><strong>自动添加到未来任务</strong><small>之后通过磁链或 BT 种子创建的新任务都会使用此列表。</small></span>
+          <span><strong>Add automatically to future tasks</strong><small>New tasks created from magnet links or torrent files will use this list.</small></span>
         </label>
         <label class="tracker-option">
           <input id="apply-existing" type="checkbox">
-          <span><strong>同时添加到现有任务</strong><small>不会删除任务中已有的 Tracker，也不会修改系统安装的 qBittorrent。</small></span>
+          <span><strong>Also add to existing tasks</strong><small>Existing Trackers are preserved, and a system-installed qBittorrent is never modified.</small></span>
         </label>
         <div class="tracker-actions">
-          <button id="enable-engine-button" class="secondary-button" type="button" hidden>确认并启用下载引擎</button>
-          <button id="save-trackers-button" class="download-button" type="button">保存并应用</button>
+          <button id="enable-engine-button" class="secondary-button" type="button" hidden>Confirm &amp; Enable Engine</button>
+          <button id="save-trackers-button" class="download-button" type="button">Save &amp; Apply</button>
         </div>
-        <div id="tracker-status" class="tracker-message" role="status" aria-live="polite">正在读取当前配置…</div>
+        <div id="tracker-status" class="tracker-message" role="status" aria-live="polite">Loading current configuration…</div>
       </article>
     </section>
 
-    <footer>Tracker 只帮助 BT 客户端发现其他节点，不托管或提供下载内容。</footer>
+    <footer>Trackers help BitTorrent clients discover peers; they do not host or provide downloadable content.</footer>
   </main>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="/portable.js" defer></script>

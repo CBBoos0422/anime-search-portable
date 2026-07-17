@@ -1,15 +1,14 @@
 @echo off
-chcp 65001 >nul
 cd /d "%~dp0"
 
 if not exist "vendor\node\node.exe" (
-  echo 便携包不完整：缺少内置 Node.js。
+  echo The portable package is incomplete: bundled Node.js is missing.
   pause
   exit /b 1
 )
 
 if not exist "vendor\qbittorrent\qbittorrent.exe" (
-  echo 便携包不完整：缺少内置 qBittorrent。
+  echo The portable package is incomplete: bundled qBittorrent is missing.
   pause
   exit /b 1
 )

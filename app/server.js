@@ -41,13 +41,17 @@ const engine = new QbittorrentEngine({
   portEnd: 18120
 })
 const CATEGORY_NAMES = {
-  '1': '动漫',
-  '2': '音频',
-  '3': '文学',
-  '4': '真人影视',
-  '5': '图片',
-  '6': '软件'
+  '1': 'Anime',
+  '2': 'Audio',
+  '3': 'Literature',
+  '4': 'Live Action',
+  '5': 'Pictures',
+  '6': 'Software'
 }
+const LEGACY_CATEGORY_NAMES = new Map([
+  ['动漫', 'Anime'], ['音频', 'Audio'], ['文学', 'Literature'],
+  ['真人影视', 'Live Action'], ['图片', 'Pictures'], ['软件', 'Software'], ['其他', 'Other']
+])
 const MEDIA_EXTENSIONS = new Set([
   '.mp4', '.mkv', '.avi', '.mov', '.wmv', '.webm', '.m4v', '.mpg', '.mpeg', '.ts', '.m2ts',
   '.mp3', '.flac', '.wav', '.m4a', '.aac', '.ogg', '.opus', '.wma'
@@ -67,12 +71,14 @@ const staticFiles = new Map([
 
 function categoryNameFromCode (category) {
   const majorCode = String(category || '').split('_')[0]
-  return CATEGORY_NAMES[majorCode] || '其他'
+  return CATEGORY_NAMES[majorCode] || 'Other'
 }
 
 function categoryNameFromTags (tags) {
   const match = String(tags || '').split(',').map((tag) => tag.trim()).find((tag) => tag.startsWith('分类-'))
-  return match ? match.slice(3) : '其他'
+  if (!match) return 'Other'
+  const value = match.slice(3)
+  return LEGACY_CATEGORY_NAMES.get(value) || value
 }
 
 function setSecurityHeaders (response) {
@@ -98,7 +104,7 @@ function sendApiError (response, error, fallbackStatus = 400) {
 function serveStaticFile (response, fileName, contentType) {
   fs.readFile(path.join(PUBLIC_DIR, fileName), (error, data) => {
     if (error) {
-      sendJson(response, 500, { error: '页面文件读取失败。' })
+      sendJson(response, 500, { error: 'Unable to read the page file.' })
       return
     }
 
@@ -116,7 +122,7 @@ function readJsonBody (request) {
     request.on('data', (chunk) => {
       size += chunk.length
       if (size > MAX_BODY_SIZE) {
-        reject(new Error('请求内容过大。'))
+        reject(new Error('Request body is too large.'))
         request.destroy()
         return
       }
@@ -127,7 +133,7 @@ function readJsonBody (request) {
       try {
         resolve(JSON.parse(Buffer.concat(chunks).toString('utf8')))
       } catch {
-        reject(new Error('请求格式无效。'))
+        reject(new Error('Invalid request format.'))
       }
     })
     request.on('error', reject)
@@ -144,25 +150,25 @@ function validateSearch (body) {
   const source = typeof body.source === 'string' ? body.source : 'nyaa'
 
   if (!query || query.length > 200) {
-    throw new Error('搜索关键词长度必须在 1 到 200 个字符之间。')
+    throw new Error('The search query must contain between 1 and 200 characters.')
   }
   if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
-    throw new Error('结果数量必须是 1 到 100 之间的整数。')
+    throw new Error('The result limit must be an integer between 1 and 100.')
   }
   if (![0, 1, 2].includes(filter)) {
-    throw new Error('过滤条件无效。')
+    throw new Error('Invalid filter option.')
   }
   if (!/^\d{1,2}_\d{1,2}$/.test(category)) {
-    throw new Error('分类格式无效。')
+    throw new Error('Invalid category format.')
   }
   if (!['id', 'size', 'seeders', 'leechers', 'downloads'].includes(sort)) {
-    throw new Error('排序字段无效。')
+    throw new Error('Invalid sort field.')
   }
   if (!['asc', 'desc'].includes(direction)) {
-    throw new Error('排序方向无效。')
+    throw new Error('Invalid sort direction.')
   }
   if (!['nyaa', 'animegarden', 'all'].includes(source)) {
-    throw new Error('搜索来源无效。')
+    throw new Error('Invalid search source.')
   }
 
   return { query, limit, filter, category, sort, direction, source }
@@ -183,10 +189,10 @@ async function search (request, response) {
     const warnings = []
     settled.forEach((result, index) => {
       if (result.status === 'fulfilled') items.push(...result.value)
-      else warnings.push(`${searches[index].source}：${result.reason?.message || '连接失败'}`)
+      else warnings.push(`${searches[index].source}: ${result.reason?.message || 'Connection failed'}`)
     })
     if (warnings.length === searches.length) {
-      const error = new Error(`所有搜索源均不可用（${warnings.join('；')}）。`)
+      const error = new Error(`All search sources are unavailable (${warnings.join('; ')}).`)
       error.statusCode = 502
       throw error
     }
@@ -199,21 +205,21 @@ async function search (request, response) {
 function validateMagnet (value) {
   const magnet = typeof value === 'string' ? value.trim() : ''
   if (!magnet || magnet.length > 8192) {
-    throw new Error('磁力链接为空或过长。')
+    throw new Error('The magnet link is empty or too long.')
   }
 
   let magnetUrl
   try {
     magnetUrl = new URL(magnet)
   } catch {
-    throw new Error('磁力链接格式无效。')
+    throw new Error('Invalid magnet-link format.')
   }
 
   const hasInfoHash = magnetUrl.searchParams
     .getAll('xt')
     .some((item) => /^urn:btih:[a-z0-9]+$/i.test(item))
   if (magnetUrl.protocol !== 'magnet:' || !hasInfoHash) {
-    throw new Error('磁力链接缺少有效的 BTIH 信息哈希。')
+    throw new Error('The magnet link does not contain a valid BTIH info hash.')
   }
   return magnet
 }
@@ -263,15 +269,15 @@ async function addDownloads (request, response) {
     const paused = body.startPaused === true ? 'true' : 'false'
     const maximum = method === 'torrent' ? 20 : 100
     if (submittedItems.length < 1 || submittedItems.length > maximum) {
-      throw new Error(`请选择 1 到 ${maximum} 个${method === 'torrent' ? ' BT 种子' : '磁力链接'}。`)
+      throw new Error(`Select between 1 and ${maximum} ${method === 'torrent' ? 'torrent files' : 'magnet links'}.`)
     }
     const savePath = typeof body.savePath === 'string' ? body.savePath.trim() : ''
     if (!savePath || savePath.length > 1000 || !path.isAbsolute(savePath)) {
-      throw new Error('请选择有效的绝对下载目录。')
+      throw new Error('Choose a valid absolute download directory.')
     }
     const pathInfo = fs.existsSync(savePath) ? fs.statSync(savePath) : null
     if (!pathInfo?.isDirectory()) {
-      throw new Error('所选下载目录不存在。')
+      throw new Error('The selected download directory does not exist.')
     }
 
     if (method === 'magnet') {
@@ -299,7 +305,7 @@ async function addDownloads (request, response) {
         form.append('tags', `NyaaWebTool,来源-${group.sourceName},分类-${group.categoryName}`)
         const result = await qBittorrentRequest('/api/v2/torrents/add', { method: 'POST', body: form })
         if (/fails/i.test(await result.text())) {
-          throw new Error(`qBittorrent 未能添加“${group.categoryName}”分类中的磁链。`)
+          throw new Error(`qBittorrent could not add magnet links from the “${group.categoryName}” category.`)
         }
       }
       sendJson(response, 200, { ok: true, count: uniqueItems.size, method })
@@ -329,7 +335,7 @@ async function addDownloads (request, response) {
       form.append('tags', `NyaaWebTool,来源-${sourceName},分类-${categoryName}`)
       const result = await qBittorrentRequest('/api/v2/torrents/add', { method: 'POST', body: form })
       if (/fails/i.test(await result.text())) {
-        throw new Error(`qBittorrent 未能添加“${item.name || sourceName}”的 BT 种子。`)
+        throw new Error(`qBittorrent could not add the torrent file for “${item.name || sourceName}”.`)
       }
       index += 1
     }
@@ -344,7 +350,7 @@ async function changeDownloadState (request, response) {
     const body = await readJsonBody(request)
     const hash = typeof body.hash === 'string' ? body.hash.trim().toLowerCase() : ''
     if (!/^[a-f0-9]{40,64}$/.test(hash)) {
-      throw new Error('下载任务哈希无效。')
+      throw new Error('Invalid download-task hash.')
     }
     const actions = {
       stop: { endpoint: 'stop', fields: { hashes: hash } },
@@ -352,7 +358,7 @@ async function changeDownloadState (request, response) {
       remove: { endpoint: 'delete', fields: { hashes: hash, deleteFiles: 'true' } }
     }
     const action = actions[body.action]
-    if (!action) throw new Error('下载操作无效。')
+    if (!action) throw new Error('Invalid download action.')
 
     await qBittorrentRequest(`/api/v2/torrents/${action.endpoint}`, {
       method: 'POST',
@@ -369,7 +375,7 @@ function resolveFilePath (savePath, relativeName) {
   const filePath = path.resolve(root, String(relativeName).replaceAll('/', path.sep))
   const rootPrefix = `${root}${path.sep}`.toLowerCase()
   if (filePath.toLowerCase() !== root.toLowerCase() && !filePath.toLowerCase().startsWith(rootPrefix)) {
-    throw new Error('文件路径超出下载目录。')
+    throw new Error('The file path is outside the download directory.')
   }
   return filePath
 }
@@ -426,23 +432,23 @@ async function listLibrary (response) {
 
 async function getPlayableFile (hash, index) {
   if (!/^[a-f0-9]{40,64}$/.test(hash) || !Number.isInteger(index) || index < 0) {
-    throw new Error('媒体文件标识无效。')
+    throw new Error('Invalid media-file identifier.')
   }
   const torrentResult = await qBittorrentRequest(`/api/v2/torrents/info?hashes=${encodeURIComponent(hash)}`)
   const torrent = (await torrentResult.json())[0]
-  if (!torrent) throw new Error('下载任务不存在。')
+  if (!torrent) throw new Error('The download task does not exist.')
 
   const fileResult = await qBittorrentRequest(`/api/v2/torrents/files?hash=${encodeURIComponent(hash)}&indexes=${index}`)
   const file = (await fileResult.json()).find((item) => Number(item.index) === index)
-  if (!file) throw new Error('任务中不存在该文件。')
-  if (Number(file.progress) < 1) throw new Error('文件尚未下载完成。')
+  if (!file) throw new Error('The file does not exist in this task.')
+  if (Number(file.progress) < 1) throw new Error('The file has not finished downloading.')
   if (!MEDIA_EXTENSIONS.has(path.extname(file.name).toLowerCase())) {
-    throw new Error('该文件不是受支持的音视频格式。')
+    throw new Error('This audio or video format is not supported.')
   }
 
   const filePath = resolveFilePath(torrent.save_path, file.name)
   if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
-    throw new Error('磁盘上的媒体文件不存在。')
+    throw new Error('The media file does not exist on disk.')
   }
   return filePath
 }
@@ -483,7 +489,7 @@ async function engineStatus (response) {
 async function acceptEngineConsent (request, response) {
   try {
     const body = await readJsonBody(request)
-    if (body.accepted !== true) throw new Error('必须明确确认后才能启动内置下载引擎。')
+    if (body.accepted !== true) throw new Error('Explicit confirmation is required before starting the bundled download engine.')
     sendJson(response, 200, { ok: true, ...(await engine.acceptConsent()) })
   } catch (error) {
     sendApiError(response, error, 400)
@@ -513,7 +519,7 @@ async function closeAppBrowser () {
       env: { ...process.env, ANIME_BROWSER_PROFILE: profilePath }
     })
   } catch (error) {
-    console.error(`关闭应用窗口失败：${error.message}`)
+    console.error(`Unable to close the app window: ${error.message}`)
   }
   await fs.promises.rm(statePath, { force: true }).catch(() => {})
 }
@@ -526,7 +532,7 @@ async function exitApplication (response) {
   exiting = true
   sendJson(response, 200, { ok: true, exiting: true })
   setTimeout(async () => {
-    try { await engine.stop() } catch (error) { console.error(`停止下载引擎失败：${error.message}`) }
+    try { await engine.stop() } catch (error) { console.error(`Unable to stop the download engine: ${error.message}`) }
     await closeAppBrowser()
     server.close(() => process.exit(0))
     setTimeout(() => process.exit(0), 3000).unref()
@@ -538,7 +544,7 @@ function listDriveRoots () {
   for (let code = 65; code <= 90; code += 1) {
     const drivePath = `${String.fromCharCode(code)}:\\`
     if (fs.existsSync(drivePath)) {
-      drives.push({ name: `本地磁盘 (${drivePath.slice(0, 2)})`, path: drivePath })
+      drives.push({ name: `Local Disk (${drivePath.slice(0, 2)})`, path: drivePath })
     }
   }
   return drives
@@ -552,12 +558,12 @@ function listDownloadFolders (url, response) {
       return
     }
     if (requestedPath.length > 1000 || !path.isAbsolute(requestedPath)) {
-      throw new Error('目录路径无效。')
+      throw new Error('Invalid directory path.')
     }
 
     const currentPath = fs.realpathSync(requestedPath)
     if (!fs.statSync(currentPath).isDirectory()) {
-      throw new Error('所选路径不是文件夹。')
+      throw new Error('The selected path is not a directory.')
     }
     const parentPath = path.dirname(currentPath)
     const directories = fs.readdirSync(currentPath, { withFileTypes: true })
@@ -571,7 +577,7 @@ function listDownloadFolders (url, response) {
       directories
     })
   } catch (error) {
-    sendJson(response, 400, { error: `无法读取该目录（${error.message}）` })
+    sendJson(response, 400, { error: `Unable to read this directory (${error.message})` })
   }
 }
 
@@ -749,7 +755,7 @@ const server = http.createServer((request, response) => {
     return
   }
 
-  sendJson(response, 404, { error: '未找到该页面。' })
+  sendJson(response, 404, { error: 'Page not found.' })
 })
 
 function openBrowser (url) {
@@ -763,7 +769,7 @@ function openBrowser (url) {
     ]
     const appBrowser = candidates.find((candidate) => candidate && fs.existsSync(candidate))
     if (!appBrowser) {
-      console.error('未找到 Microsoft Edge 或 Google Chrome，无法打开独立应用窗口。')
+      console.error('Microsoft Edge or Google Chrome was not found. Unable to open the dedicated app window.')
       return
     }
     const browserProfile = path.join(APP_ROOT, 'runtime', 'browser-profile')
@@ -804,16 +810,16 @@ function openBrowser (url) {
 
 server.listen(PORT, HOST, () => {
   const url = `http://${HOST}:${PORT}`
-  console.log(`Anime Search 界面已启动：${url}`)
-  console.log('关闭此窗口或按 Ctrl+C 可停止服务。')
+  console.log(`Anime Search is running at ${url}`)
+  console.log('Close this window or press Ctrl+C to stop the service.')
   if (process.env.NO_OPEN !== '1') openBrowser(url)
 })
 
 server.on('error', (error) => {
   if (error.code === 'EADDRINUSE') {
-    console.error(`端口 ${PORT} 已被占用，请关闭旧窗口后重试。`)
+    console.error(`Port ${PORT} is already in use. Close the previous instance and try again.`)
   } else {
-    console.error(`服务启动失败：${error.message}`)
+    console.error(`Service startup failed: ${error.message}`)
   }
   process.exitCode = 1
 })

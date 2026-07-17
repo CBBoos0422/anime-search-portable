@@ -18,20 +18,20 @@ const engineController = {
     backdrop.innerHTML = `
       <section class="folder-dialog engine-consent-dialog" role="dialog" aria-modal="true" aria-labelledby="engine-consent-title">
         <p class="eyebrow">FIRST RUN</p>
-        <h2 id="engine-consent-title">启用内置下载引擎</h2>
-        <p>Anime Search 内置 qBittorrent 5.2.3，用于在本机后台处理磁力链接。它不会打开窗口或系统托盘，下载操作只在本网页中显示。</p>
+        <h2 id="engine-consent-title">Enable the Bundled Download Engine</h2>
+        <p>Anime Search uses qBittorrent 5.2.3 to process magnet links in the background. It does not open a window or system-tray icon; download activity appears only in this web interface.</p>
         <div class="consent-note">
-          <strong>使用前请确认</strong>
-          <span>qBittorrent 是采用 GNU GPL 发布的自由软件。请只下载和分享你有权获取的内容，并遵守所在地法律。</span>
-          <a href="/third-party.html" target="_blank" rel="noopener">查看第三方软件与许可说明</a>
+          <strong>Confirmation required</strong>
+          <span>qBittorrent is free software released under the GNU GPL. Download and share only content you are authorized to access, and follow applicable law.</span>
+          <a href="/third-party.html" target="_blank" rel="noopener">View third-party software and license information</a>
         </div>
         <label class="consent-checkbox">
           <input type="checkbox">
-          <span>我已阅读说明，并同意仅将下载功能用于合法内容。</span>
+          <span>I have read this notice and will use download features only for lawful content.</span>
         </label>
         <div class="consent-actions">
-          <button class="secondary-button consent-later-button" type="button">暂不启用</button>
-          <button class="download-button consent-accept-button" type="button" disabled>确认并启用</button>
+          <button class="secondary-button consent-later-button" type="button">Not Now</button>
+          <button class="download-button consent-accept-button" type="button" disabled>Confirm &amp; Enable</button>
         </div>
       </section>`
     document.body.append(backdrop)
@@ -47,7 +47,7 @@ const engineController = {
     })
     acceptButton.addEventListener('click', async () => {
       acceptButton.disabled = true
-      acceptButton.textContent = '正在启动…'
+      acceptButton.textContent = 'Starting…'
       try {
         const response = await fetch('/api/engine/accept', {
           method: 'POST',
@@ -55,7 +55,7 @@ const engineController = {
           body: JSON.stringify({ accepted: true })
         })
         const data = await response.json()
-        if (!response.ok) throw new Error(data.error || '无法启动下载引擎。')
+        if (!response.ok) throw new Error(data.error || 'Unable to start the download engine.')
         backdrop.hidden = true
         document.body.style.overflow = ''
         this.dispatch(data)
@@ -65,7 +65,7 @@ const engineController = {
         note.classList.add('error-text')
         acceptButton.disabled = false
       } finally {
-        acceptButton.textContent = '确认并启用'
+        acceptButton.textContent = 'Confirm & Enable'
       }
     })
     this.modal = backdrop
@@ -90,7 +90,7 @@ const engineController = {
     try {
       const response = await fetch('/api/engine/status')
       const data = await response.json()
-      if (!response.ok) throw new Error(data.error || '无法读取下载引擎状态。')
+      if (!response.ok) throw new Error(data.error || 'Unable to read the download engine status.')
       this.dispatch(data)
       if (data.state === 'consent_required') this.requireConsent()
     } catch (error) {
@@ -103,28 +103,28 @@ window.AnimeEngine = engineController
 
 document.querySelectorAll('.exit-app-button').forEach((button) => {
   button.addEventListener('click', async () => {
-    const confirmed = window.confirm('将关闭网页窗口并停止后台下载引擎；未完成任务会在下次启动时继续。确定退出 Anime Search 吗？')
+    const confirmed = window.confirm('This will close the app window and stop the background download engine. Unfinished tasks will resume the next time you start Anime Search. Exit now?')
     if (!confirmed) return
     button.disabled = true
-    button.textContent = '正在关闭…'
+    button.textContent = 'Closing…'
     try {
       const response = await fetch('/api/exit', { method: 'POST' })
       const data = await response.json()
-      if (!response.ok) throw new Error(data.error || '退出失败。')
+      if (!response.ok) throw new Error(data.error || 'Unable to exit the application.')
       window.dispatchEvent(new CustomEvent('anime-app-exiting'))
       window.close()
 
-      // Edge/Chrome 的独立应用窗口通常允许自行关闭；普通浏览器标签页可能阻止脚本关窗。
+      // Edge and Chrome app windows usually allow self-closing; a regular browser tab may block it.
       setTimeout(() => {
         if (window.closed) return
         const screen = document.createElement('div')
         screen.className = 'exit-screen'
-        screen.innerHTML = '<div class="exit-screen-card"><h2>正在退出 Anime Search</h2><p>后台下载引擎停止后，专用窗口将自动关闭。</p></div>'
+        screen.innerHTML = '<div class="exit-screen-card"><h2>Exiting Anime Search</h2><p>The app window will close after the background download engine stops.</p></div>'
         document.body.append(screen)
       }, 300)
     } catch (error) {
       button.disabled = false
-      button.textContent = '退出程序'
+      button.textContent = 'Exit App'
       window.alert(error.message)
     }
   })

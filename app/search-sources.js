@@ -25,14 +25,22 @@ function formatBytes (bytes) {
 
 function categoryNameFromCode (category) {
   const names = {
-    '1': '动漫',
-    '2': '音频',
-    '3': '文学',
-    '4': '真人影视',
-    '5': '图片',
-    '6': '软件'
+    '1': 'Anime',
+    '2': 'Audio',
+    '3': 'Literature',
+    '4': 'Live Action',
+    '5': 'Pictures',
+    '6': 'Software'
   }
-  return names[String(category || '').split('_')[0]] || '其他'
+  return names[String(category || '').split('_')[0]] || 'Other'
+}
+
+function animeGardenTypeName (type) {
+  const names = new Map([
+    ['动画', 'Anime'], ['合集', 'Collection'], ['音乐', 'Music'], ['其他', 'Other']
+  ])
+  const value = String(type || '').trim()
+  return names.get(value) || value || 'Anime'
 }
 
 function mapNyaaItem (item) {
@@ -84,7 +92,7 @@ async function searchNyaa (si, options, network = {}) {
 
 function validateAnimeGardenPayload (payload) {
   if (!payload || payload.status !== 'OK' || !Array.isArray(payload.resources)) {
-    throw new Error('AnimeGarden API 返回了无法识别的数据。')
+    throw new Error('AnimeGarden returned an unrecognized API response.')
   }
   return payload.resources
 }
@@ -113,7 +121,7 @@ function mapAnimeGardenItem (item) {
     date: item.createdAt,
     category: '1_0',
     subCategory: '',
-    categoryName: item.type || '动漫',
+    categoryName: animeGardenTypeName(item.type),
     magnet,
     trackerCount,
     torrentAvailable: true,
@@ -133,7 +141,7 @@ async function searchAnimeGarden (options, fetchImpl = fetch) {
     headers: { Accept: 'application/json', 'User-Agent': 'Anime-Search/1.2' },
     signal: AbortSignal.timeout(15000)
   })
-  if (!response.ok) throw new Error(`AnimeGarden API 返回 HTTP ${response.status}。`)
+  if (!response.ok) throw new Error(`AnimeGarden API returned HTTP ${response.status}.`)
   return validateAnimeGardenPayload(await response.json()).map(mapAnimeGardenItem)
 }
 
@@ -141,7 +149,7 @@ function validateProviderReference (provider, providerId) {
   const safeProvider = String(provider || '').trim().toLowerCase()
   const safeProviderId = String(providerId || '').trim()
   if (!/^[a-z0-9_-]{1,40}$/u.test(safeProvider) || !/^[a-z0-9_-]{1,120}$/iu.test(safeProviderId)) {
-    throw new Error('AnimeGarden 资源标识无效。')
+    throw new Error('Invalid AnimeGarden release identifier.')
   }
   return { provider: safeProvider, providerId: safeProviderId }
 }
@@ -149,10 +157,10 @@ function validateProviderReference (provider, providerId) {
 async function resolveTorrentUrl (item, fetchImpl = fetch) {
   if (item.source === 'nyaa') {
     const id = String(item.id || '').trim()
-    if (!/^\d{1,12}$/u.test(id)) throw new Error('Nyaa 资源标识无效。')
+    if (!/^\d{1,12}$/u.test(id)) throw new Error('Invalid Nyaa release identifier.')
     return `${NYAA_BASE}/download/${id}.torrent`
   }
-  if (item.source !== 'animegarden') throw new Error('不支持的 BT 资源来源。')
+  if (item.source !== 'animegarden') throw new Error('Unsupported torrent source.')
 
   const ref = validateProviderReference(item.provider, item.providerId)
   const url = new URL(`/detail/${encodeURIComponent(ref.provider)}/${encodeURIComponent(ref.providerId)}`, ANIME_GARDEN_API)
@@ -160,7 +168,7 @@ async function resolveTorrentUrl (item, fetchImpl = fetch) {
     headers: { Accept: 'application/json', 'User-Agent': 'Anime-Search/1.2' },
     signal: AbortSignal.timeout(15000)
   })
-  if (!response.ok) throw new Error(`AnimeGarden 详情接口返回 HTTP ${response.status}。`)
+  if (!response.ok) throw new Error(`AnimeGarden detail API returned HTTP ${response.status}.`)
   const payload = await response.json()
   const links = Array.isArray(payload?.detail?.magnets) ? payload.detail.magnets : []
   const torrent = links.find((entry) => {
@@ -171,7 +179,7 @@ async function resolveTorrentUrl (item, fetchImpl = fetch) {
       return false
     }
   })
-  if (!torrent) throw new Error('该 AnimeGarden 资源没有提供可用的 BT 种子文件。')
+  if (!torrent) throw new Error('This AnimeGarden release does not provide a usable torrent file.')
   return torrent.url
 }
 
@@ -185,9 +193,9 @@ function safeTorrentFileName (item, index) {
 
 async function fetchTorrentPayload (url, fetchImpl, network = {}) {
   const parsed = new URL(url)
-  if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error('BT 种子地址协议无效。')
+  if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error('Invalid torrent URL protocol.')
   if (/^(localhost|127\.|0\.|10\.|192\.168\.|169\.254\.|\[?::1\]?)/iu.test(parsed.hostname)) {
-    throw new Error('拒绝访问本地或私有网络中的种子地址。')
+    throw new Error('Torrent URLs on local or private networks are not allowed.')
   }
   if (!fetchImpl) {
     const client = network.axios || axios
@@ -216,11 +224,11 @@ async function fetchTorrentPayload (url, fetchImpl, network = {}) {
     }
     if (!response) {
       const status = lastError?.response?.status
-      throw new Error(status ? `下载 BT 种子失败（HTTP ${status}）。` : `下载 BT 种子失败（${lastError?.message || '连接失败'}）。`)
+      throw new Error(status ? `Torrent download failed (HTTP ${status}).` : `Torrent download failed (${lastError?.message || 'connection failed'}).`)
     }
     const data = Buffer.from(response.data)
     if (data.length < 16 || data.length > 8 * 1024 * 1024 || data[0] !== 0x64) {
-      throw new Error('下载内容不是有效的 BT 种子文件。')
+      throw new Error('The downloaded content is not a valid torrent file.')
     }
     return data
   }
@@ -230,12 +238,12 @@ async function fetchTorrentPayload (url, fetchImpl, network = {}) {
     headers: { Accept: 'application/x-bittorrent, application/octet-stream;q=0.9', 'User-Agent': 'Anime-Search/1.2' },
     signal: AbortSignal.timeout(20000)
   })
-  if (!response.ok) throw new Error(`下载 BT 种子失败（HTTP ${response.status}）。`)
+  if (!response.ok) throw new Error(`Torrent download failed (HTTP ${response.status}).`)
   const declaredSize = Number(response.headers.get('content-length')) || 0
-  if (declaredSize > 8 * 1024 * 1024) throw new Error('BT 种子文件超过 8 MB 限制。')
+  if (declaredSize > 8 * 1024 * 1024) throw new Error('The torrent file exceeds the 8 MB limit.')
   const data = Buffer.from(await response.arrayBuffer())
   if (data.length < 16 || data.length > 8 * 1024 * 1024 || data[0] !== 0x64) {
-    throw new Error('下载内容不是有效的 BT 种子文件。')
+    throw new Error('The downloaded content is not a valid torrent file.')
   }
   return data
 }

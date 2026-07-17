@@ -12,7 +12,7 @@ test('recommended trackers include anime-specific endpoints', () => {
   const list = recommendedTrackers()
   assert.ok(list.some((item) => item.url.includes('bangumi.moe')))
   assert.ok(list.some((item) => item.url.includes('acg.rip')))
-  assert.ok(list.every((item) => ['动漫专用', '公共网络'].includes(item.group)))
+  assert.ok(list.every((item) => ['Anime-focused', 'Public network'].includes(item.group)))
 })
 
 test('tracker normalization removes blanks and duplicates', () => {
@@ -21,7 +21,7 @@ test('tracker normalization removes blanks and duplicates', () => {
 })
 
 test('tracker normalization rejects non-BitTorrent protocols', () => {
-  assert.throws(() => normalizeTrackerList('file:///C:/tracker'), /协议不受支持/u)
+  assert.throws(() => normalizeTrackerList('file:///C:/tracker'), /Unsupported Tracker protocol/u)
 })
 
 test('online list is merged with anime trackers', async () => {

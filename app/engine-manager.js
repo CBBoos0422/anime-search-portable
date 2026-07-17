@@ -11,7 +11,7 @@ const execFileAsync = promisify(execFile)
 
 class EngineConsentError extends Error {
   constructor () {
-    super('首次使用前，请先确认 qBittorrent 许可与合法使用提示。')
+    super('Confirm the qBittorrent license and lawful-use notice before first use.')
     this.name = 'EngineConsentError'
     this.code = 'ENGINE_CONSENT_REQUIRED'
     this.statusCode = 428
@@ -94,7 +94,7 @@ async function findAvailablePort (start, end, host = '127.0.0.1') {
   for (let port = start; port <= end; port += 1) {
     if (await isPortAvailable(port, host)) return port
   }
-  throw new Error(`端口 ${start}–${end} 均被占用，无法启动内置下载引擎。`)
+  throw new Error(`All ports from ${start} to ${end} are in use. The bundled download engine cannot start.`)
 }
 
 function delay (milliseconds) {
@@ -318,9 +318,9 @@ class QbittorrentEngine {
     try {
       stat = await fs.promises.stat(this.executablePath)
     } catch {
-      throw new Error('内置 qBittorrent 程序缺失，请重新解压完整便携包。')
+      throw new Error('The bundled qBittorrent executable is missing. Extract the complete portable package again.')
     }
-    if (!stat.isFile()) throw new Error('内置 qBittorrent 路径无效。')
+    if (!stat.isFile()) throw new Error('The bundled qBittorrent path is invalid.')
     if (!this.expectedSha256) return
 
     const hash = crypto.createHash('sha256')
@@ -331,7 +331,7 @@ class QbittorrentEngine {
       stream.on('error', reject)
     })
     if (hash.digest('hex') !== this.expectedSha256) {
-      throw new Error('内置 qBittorrent 文件校验失败，请重新获取官方便携包。')
+      throw new Error('Bundled qBittorrent verification failed. Obtain a fresh official portable package.')
     }
   }
 
@@ -350,7 +350,7 @@ class QbittorrentEngine {
 
     const orphanedOwnedProcesses = await this.ownedProcesses()
     if (orphanedOwnedProcesses.length > 0) {
-      throw new Error('检测到本项目残留的 qBittorrent 进程，但无法连接其 Web API。请退出程序后重新打开。')
+      throw new Error('A qBittorrent process left by this project was detected, but its Web API is unreachable. Exit Anime Search and open it again.')
     }
 
     const port = await findAvailablePort(this.portStart, this.portEnd)
@@ -394,7 +394,7 @@ class QbittorrentEngine {
     this.pid = null
     this.port = null
     await fs.promises.rm(this.statePath, { force: true })
-    throw new Error('内置 qBittorrent 后台服务启动超时。')
+    throw new Error('The bundled qBittorrent background service timed out while starting.')
   }
 
   async ensureRunning () {
@@ -422,7 +422,7 @@ class QbittorrentEngine {
       },
       signal: options.signal || AbortSignal.timeout(15000)
     })
-    if (!response.ok) throw new Error(`qBittorrent API 返回 HTTP ${response.status}。`)
+    if (!response.ok) throw new Error(`qBittorrent API returned HTTP ${response.status}.`)
     return response
   }
 

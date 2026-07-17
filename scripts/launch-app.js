@@ -67,19 +67,19 @@ async function startService () {
     await delay(250)
     if (await serviceReady()) return
   }
-  throw new Error(`无法启动 Anime Search。请检查日志：${logPath}`)
+  throw new Error(`Unable to start Anime Search. Check the log: ${logPath}`)
 }
 
 async function main () {
   if (!fs.existsSync(NODE_PATH) || !fs.existsSync(QBIT_PATH)) {
-    throw new Error('便携包不完整，缺少 Node.js 或 qBittorrent。请重新解压完整便携包。')
+    throw new Error('The portable package is incomplete: Node.js or qBittorrent is missing. Extract the complete package again.')
   }
   await fs.promises.mkdir(BROWSER_PROFILE, { recursive: true })
   await fs.promises.access(RUNTIME_DIR, fs.constants.W_OK)
   if (!await serviceReady()) await startService()
 
   const browser = findBrowser()
-  if (!browser) throw new Error('未找到 Microsoft Edge 或 Google Chrome，无法打开独立应用窗口。')
+  if (!browser) throw new Error('Microsoft Edge or Google Chrome was not found. Unable to open the dedicated app window.')
   const child = spawn(browser, [
     `--user-data-dir=${BROWSER_PROFILE}`,
     `--app=${APP_URL}`,
@@ -100,7 +100,7 @@ async function main () {
 }
 
 main().catch((error) => {
-  try { fs.appendFileSync(path.join(APP_ROOT, 'nyaa-gui.log'), `\n启动器错误：${error.stack || error.message}\n`, 'utf8') } catch {}
+  try { fs.appendFileSync(path.join(APP_ROOT, 'nyaa-gui.log'), `\nLauncher error: ${error.stack || error.message}\n`, 'utf8') } catch {}
   showError(error.message)
   process.exitCode = 1
 })

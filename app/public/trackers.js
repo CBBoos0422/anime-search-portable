@@ -60,7 +60,7 @@ function renderRecommended () {
     row.append(copy, group)
     row.addEventListener('click', () => {
       setEditorTrackers([...currentTrackerLines(), item.url])
-      showToast(`已加入 ${item.label}`)
+      showToast(`Added ${item.label}`)
     })
     recommendedContainer.append(row)
   })
@@ -68,13 +68,13 @@ function renderRecommended () {
 
 function updateEngineDisplay (state) {
   const labels = {
-    consent_required: '等待首次确认',
-    stopped: '尚未启动',
-    starting: '正在启动',
-    running: '后台运行中',
-    error: '启动失败'
+    consent_required: 'Awaiting confirmation',
+    stopped: 'Stopped',
+    starting: 'Starting',
+    running: 'Running in background',
+    error: 'Start failed'
   }
-  engineState.textContent = labels[state] || state || '未知'
+  engineState.textContent = labels[state] || state || 'Unknown'
   enableEngineButton.hidden = state !== 'consent_required'
   saveButton.disabled = state === 'consent_required' || state === 'starting'
 }
@@ -83,7 +83,7 @@ async function loadStatus () {
   try {
     const response = await fetch('/api/trackers')
     const data = await response.json()
-    if (!response.ok) throw new Error(data.error || '无法读取 Tracker 配置。')
+    if (!response.ok) throw new Error(data.error || 'Unable to load Tracker settings.')
     recommended = data.recommended || []
     renderRecommended()
     updateEngineDisplay(data.engineState)
@@ -92,8 +92,8 @@ async function loadStatus () {
     if (data.configured?.length) setEditorTrackers(data.configured)
     else setEditorTrackers(recommended.map((item) => item.url))
     setMessage(data.engineState === 'consent_required'
-      ? '确认许可后才能把 Tracker 写入内置 qBittorrent。'
-      : '配置已读取。点击“保存并应用”后生效。')
+      ? 'Confirm the license notice before writing Trackers to the bundled qBittorrent engine.'
+      : 'Configuration loaded. Choose “Save & Apply” to make changes effective.')
   } catch (error) {
     setMessage(error.message, 'error')
   }
@@ -101,24 +101,24 @@ async function loadStatus () {
 
 recommendedButton.addEventListener('click', () => {
   setEditorTrackers(recommended.map((item) => item.url))
-  showToast('已载入推荐 Tracker')
+  showToast('Recommended Trackers loaded')
 })
 
 refreshOnlineButton.addEventListener('click', async () => {
   refreshOnlineButton.disabled = true
-  refreshOnlineButton.textContent = '正在获取…'
+  refreshOnlineButton.textContent = 'Loading…'
   try {
     const response = await fetch('/api/trackers/online')
     const data = await response.json()
-    if (!response.ok) throw new Error(data.error || '在线列表获取失败。')
+    if (!response.ok) throw new Error(data.error || 'Unable to retrieve the online list.')
     setEditorTrackers(data.trackers)
-    onlineSource.textContent = `已从 XIU2 每日列表更新 · ${new Date(data.updatedAt).toLocaleString('zh-CN')}`
-    showToast(`已载入 ${data.trackers.length} 个 Tracker`)
+    onlineSource.textContent = `Updated from the XIU2 daily list · ${new Date(data.updatedAt).toLocaleString('en')}`
+    showToast(`Loaded ${data.trackers.length} Trackers`)
   } catch (error) {
     showToast(error.message, 'error')
   } finally {
     refreshOnlineButton.disabled = false
-    refreshOnlineButton.textContent = '从在线每日列表刷新'
+    refreshOnlineButton.textContent = 'Refresh from Daily Online List'
   }
 })
 
@@ -127,12 +127,12 @@ enableEngineButton.addEventListener('click', () => window.AnimeEngine?.requireCo
 saveButton.addEventListener('click', async () => {
   const trackers = currentTrackerLines()
   if (!trackers.length) {
-    showToast('请至少填写一个 Tracker', 'error')
+    showToast('Enter at least one Tracker', 'error')
     editor.focus()
     return
   }
   saveButton.disabled = true
-  saveButton.textContent = '正在应用…'
+  saveButton.textContent = 'Applying…'
   try {
     const response = await fetch('/api/trackers', {
       method: 'POST',
@@ -146,19 +146,19 @@ saveButton.addEventListener('click', async () => {
     const data = await response.json()
     if (!response.ok) {
       if (window.AnimeEngine?.handleApiError(response, data)) return
-      throw new Error(data.error || 'Tracker 应用失败。')
+      throw new Error(data.error || 'Unable to apply Tracker settings.')
     }
     configuredCount.textContent = String(data.configured)
     const existingResult = applyExisting.checked
-      ? `；已应用到 ${data.applied} 个现有任务${data.failed ? `，${data.failed} 个失败` : ''}`
+      ? `; applied to ${data.applied} existing task${data.applied === 1 ? '' : 's'}${data.failed ? `, ${data.failed} failed` : ''}`
       : ''
-    setMessage(`已保存 ${data.configured} 个 Tracker${existingResult}。`, data.failed ? 'normal' : 'success')
-    showToast('Tracker 配置已生效')
+    setMessage(`Saved ${data.configured} Tracker${data.configured === 1 ? '' : 's'}${existingResult}.`, data.failed ? 'normal' : 'success')
+    showToast('Tracker settings applied')
   } catch (error) {
     setMessage(error.message, 'error')
     showToast(error.message, 'error')
   } finally {
-    saveButton.textContent = '保存并应用'
+    saveButton.textContent = 'Save & Apply'
     saveButton.disabled = false
   }
 })

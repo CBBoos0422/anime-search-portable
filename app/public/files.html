@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <title>分类文件库 · Anime Search</title>
+  <title>File Library · Anime Search</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
@@ -15,50 +15,50 @@
     <header class="hero">
       <div>
         <p class="eyebrow">ANIME SEARCH LIBRARY</p>
-        <h1>分类文件库</h1>
-        <p class="subtitle">自动清理文件名中的集数、清晰度和编码等信息，再按资源名称整理查看。</p>
+        <h1>File Library</h1>
+        <p class="subtitle">Clean episode, resolution, and codec details from file names, then group files by release title.</p>
       </div>
-      <nav class="top-nav" aria-label="主导航">
-        <a href="/">搜索下载</a>
-        <a class="active" href="/files.html">分类文件库</a>
-        <a href="/trackers.html">Tracker 管理</a>
-        <button class="exit-app-button" type="button">退出程序</button>
+      <nav class="top-nav" aria-label="Main navigation">
+        <a href="/">Search &amp; Download</a>
+        <a class="active" href="/files.html">File Library</a>
+        <a href="/trackers.html">Tracker Manager</a>
+        <button class="exit-app-button" type="button">Exit App</button>
       </nav>
     </header>
 
-    <section class="library-controls" aria-label="文件库工具">
+    <section class="library-controls" aria-label="File library tools">
       <label class="search-input-wrap" for="library-filter">
         <span class="search-icon" aria-hidden="true"></span>
-        <input id="library-filter" type="search" placeholder="按资源名称、任务名称或文件名筛选…" autocomplete="off">
+        <input id="library-filter" type="search" placeholder="Filter by release, task, or file name…" autocomplete="off">
       </label>
-      <button id="library-refresh-button" class="primary-button" type="button">刷新文件库</button>
+      <button id="library-refresh-button" class="primary-button" type="button">Refresh Library</button>
     </section>
 
     <section class="library-summary" aria-live="polite">
-      <div><span id="category-total">0</span><small>资源分组</small></div>
-      <div><span id="torrent-total">0</span><small>下载任务</small></div>
-      <div><span id="file-total">0</span><small>相关文件</small></div>
-      <div><span id="playable-total">0</span><small>可播放媒体</small></div>
+      <div><span id="category-total">0</span><small>Release Groups</small></div>
+      <div><span id="torrent-total">0</span><small>Download Tasks</small></div>
+      <div><span id="file-total">0</span><small>Related Files</small></div>
+      <div><span id="playable-total">0</span><small>Playable Media</small></div>
     </section>
 
     <section aria-labelledby="library-title">
       <div class="results-heading library-heading">
         <div>
           <p class="eyebrow">GROUPED CONTENT</p>
-          <h2 id="library-title">我的下载文件</h2>
+          <h2 id="library-title">My Downloaded Files</h2>
         </div>
-        <span id="library-updated" class="result-count">正在读取…</span>
+        <span id="library-updated" class="result-count">Loading…</span>
       </div>
 
       <div id="library-status" class="status-card compact">
         <div class="status-icon" aria-hidden="true">▦</div>
-        <strong>正在加载分类文件库</strong>
-        <span>下载引擎会在后台自动连接。</span>
+        <strong>Loading the file library</strong>
+        <span>The download engine connects automatically in the background.</span>
       </div>
       <div id="library-groups" class="library-groups" hidden></div>
     </section>
 
-    <footer>播放按钮会调用 Windows 当前为该格式设置的默认播放器。</footer>
+    <footer>The Play button opens the default Windows app for that media format.</footer>
   </main>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>

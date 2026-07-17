@@ -27,6 +27,7 @@ test('AnimeGarden resources are clearly mapped with full tracker magnet', () => 
   assert.match(item.magnet, /&tr=/u)
   assert.equal(item.trackerCount, 1)
   assert.equal(item.resultKey, 'animegarden:dmhy:345')
+  assert.equal(item.categoryName, 'Anime')
 })
 
 test('AnimeGarden search uses the official resources API', async () => {
@@ -64,7 +65,7 @@ test('torrent payload validation accepts bencoded files and rejects HTML', async
   assert.deepEqual(data, valid)
   await assert.rejects(
     fetchTorrentPayload('https://files.example/test.torrent', async () => new Response('<html>blocked</html>', { status: 200 })),
-    /不是有效的 BT 种子文件/u
+    /not a valid torrent file/u
   )
 })
 

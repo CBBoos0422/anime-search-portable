@@ -60,7 +60,7 @@ function extractResourceName (fileName, fallbackName = '') {
   }
 
   const fallbackCandidate = cleanCandidate(path.basename(String(fallbackName || '')))
-  return fallbackCandidate && !GENERIC_NAME.test(fallbackCandidate) ? fallbackCandidate : '未命名资源'
+  return fallbackCandidate && !GENERIC_NAME.test(fallbackCandidate) ? fallbackCandidate : 'Unnamed Release'
 }
 
 module.exports = { cleanCandidate, extractResourceName, isMetadataSegment }

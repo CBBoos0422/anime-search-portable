@@ -60,19 +60,19 @@ function setSearchLoading (loading) {
 function getSourceStatusText (source) {
   if (source === 'animegarden') {
     return {
-      title: '正在连接 AnimeGarden 数据源',
-      detail: '正在获取 AnimeGarden 的资源信息，请稍候。'
+      title: 'Connecting to AnimeGarden',
+      detail: 'Retrieving AnimeGarden release information. Please wait.'
     }
   }
   if (source === 'all') {
     return {
-      title: '正在连接 Nyaa 与 AnimeGarden',
-      detail: '正在同时搜索两个数据源，请稍候。'
+      title: 'Connecting to Nyaa and AnimeGarden',
+      detail: 'Searching both sources. Please wait.'
     }
   }
   return {
-    title: '正在连接 Nyaa 数据源',
-    detail: '正在通过 Nyaa 搜索资源，请稍候。'
+    title: 'Connecting to Nyaa',
+    detail: 'Searching releases through Nyaa. Please wait.'
   }
 }
 
@@ -95,8 +95,8 @@ function showSearchStatus (title, detail, type = 'normal') {
 
 function formatDate (value) {
   const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return '日期未知'
-  return new Intl.DateTimeFormat('zh-CN', {
+  if (Number.isNaN(date.getTime())) return 'Unknown date'
+  return new Intl.DateTimeFormat('en', {
     year: 'numeric', month: '2-digit', day: '2-digit'
   }).format(date)
 }
@@ -115,11 +115,11 @@ function formatBytes (bytes) {
 }
 
 function formatEta (seconds) {
-  if (!Number.isFinite(seconds) || seconds <= 0 || seconds >= 8640000) return '剩余时间未知'
+  if (!Number.isFinite(seconds) || seconds <= 0 || seconds >= 8640000) return 'Unknown time remaining'
   const hours = Math.floor(seconds / 3600)
   const minutes = Math.floor((seconds % 3600) / 60)
-  if (hours > 0) return `约 ${hours} 小时 ${minutes} 分`
-  return `约 ${Math.max(1, minutes)} 分钟`
+  if (hours > 0) return `About ${hours}h ${minutes}m`
+  return `About ${Math.max(1, minutes)} min`
 }
 
 async function copyText (text) {
@@ -139,11 +139,11 @@ async function copyText (text) {
 
 function updateSelectionControls () {
   const count = selectedResources.size
-  selectedCount.textContent = `已选择 ${count} 条`
-  selectAllButton.textContent = count === searchItems.length && count > 0 ? '取消全选' : '全选'
+  selectedCount.textContent = `${count} selected`
+  selectAllButton.textContent = count === searchItems.length && count > 0 ? 'Clear selection' : 'Select all'
   const torrentLimitExceeded = downloadMethodSelect.value === 'torrent' && count > 20
   downloadSelectedButton.disabled = count === 0 || !downloadPath || !engineAvailable || torrentLimitExceeded
-  downloadSelectedButton.title = torrentLimitExceeded ? 'BT 种子下载每次最多选择 20 条' : ''
+  downloadSelectedButton.title = torrentLimitExceeded ? 'Torrent-file downloads are limited to 20 items per batch' : ''
 }
 
 function updateSourceFilters () {
@@ -163,12 +163,12 @@ function renderResults (items, query) {
   searchItems = items
   selectedResources.clear()
   resultsContainer.replaceChildren()
-  resultTitle.textContent = `“${query}”的结果`
-  resultCount.textContent = `${items.length} 条结果`
+  resultTitle.textContent = `Results for “${query}”`
+  resultCount.textContent = `${items.length} result${items.length === 1 ? '' : 's'}`
 
   if (items.length === 0) {
     selectionPanel.hidden = true
-    showSearchStatus('没有找到结果', '请尝试缩短关键词或调整分类与过滤条件。')
+    showSearchStatus('No results found', 'Try a shorter keyword or adjust the category and filter settings.')
     return
   }
 
@@ -181,13 +181,13 @@ function renderResults (items, query) {
     sourceBadge.textContent = item.sourceName
     sourceBadge.classList.add(item.source)
     card.querySelector('.provider-name').textContent = item.providerName || item.categoryName || ''
-    card.querySelector('.size').textContent = `大小 ${item.filesize}`
+    card.querySelector('.size').textContent = `Size ${item.filesize}`
     if (item.source === 'animegarden') {
-      card.querySelector('.seeders').textContent = `类型 ${item.categoryName || '动漫'}`
-      card.querySelector('.leechers').textContent = `Tracker ${Number(item.trackerCount) || 0} 个`
+      card.querySelector('.seeders').textContent = `Type ${item.categoryName || 'Anime'}`
+      card.querySelector('.leechers').textContent = `${Number(item.trackerCount) || 0} Trackers`
     } else {
-      card.querySelector('.seeders').textContent = `做种 ${item.seeders}`
-      card.querySelector('.leechers').textContent = `下载中 ${item.leechers}`
+      card.querySelector('.seeders').textContent = `Seeders ${item.seeders}`
+      card.querySelector('.leechers').textContent = `Leechers ${item.leechers}`
     }
     card.querySelector('.date').textContent = formatDate(item.date)
 
@@ -203,11 +203,11 @@ function renderResults (items, query) {
     copyButton.addEventListener('click', async () => {
       try {
         await copyText(item.magnet)
-        copyButton.textContent = '已复制'
-        showToast('磁力链接已复制')
-        setTimeout(() => { copyButton.textContent = '复制磁链' }, 1400)
+        copyButton.textContent = 'Copied'
+        showToast('Magnet link copied')
+        setTimeout(() => { copyButton.textContent = 'Copy Magnet' }, 1400)
       } catch {
-        showToast('复制失败，请检查浏览器权限', 'error')
+        showToast('Copy failed. Check browser permissions.', 'error')
       }
     })
     fragment.append(card)
@@ -246,8 +246,8 @@ form.addEventListener('submit', async (event) => {
   currentSearchRequest = controller
   setSearchLoading(true)
   selectionPanel.hidden = true
-  resultTitle.textContent = '正在搜索…'
-  resultCount.textContent = '请稍候'
+  resultTitle.textContent = 'Searching…'
+  resultCount.textContent = 'Please wait'
   const sourceStatus = getSourceStatusText(options.source)
   showSearchStatus(sourceStatus.title, sourceStatus.detail)
 
@@ -259,14 +259,14 @@ form.addEventListener('submit', async (event) => {
       signal: controller.signal
     })
     const data = await response.json()
-    if (!response.ok) throw new Error(data.error || '搜索失败。')
+    if (!response.ok) throw new Error(data.error || 'Search failed.')
     renderResults(data.items, options.query)
     if (data.warnings?.length) showToast(data.warnings.join('；'), 'error')
   } catch (error) {
     if (error.name !== 'AbortError') {
-      resultTitle.textContent = '搜索失败'
-      resultCount.textContent = '0 条结果'
-      showSearchStatus('无法完成搜索', error.message, 'error')
+      resultTitle.textContent = 'Search failed'
+      resultCount.textContent = '0 results'
+      showSearchStatus('Unable to complete the search', error.message, 'error')
     }
   } finally {
     if (currentSearchRequest === controller) {
@@ -292,19 +292,19 @@ async function loadFolder (folderPath) {
   folderList.replaceChildren()
   const loading = document.createElement('div')
   loading.className = 'folder-empty'
-  loading.textContent = '正在读取文件夹…'
+  loading.textContent = 'Loading folders…'
   folderList.append(loading)
 
   try {
     const query = folderPath ? `?path=${encodeURIComponent(folderPath)}` : ''
     const response = await fetch(`/api/directories${query}`)
     const data = await response.json()
-    if (!response.ok) throw new Error(data.error || '无法读取目录。')
+    if (!response.ok) throw new Error(data.error || 'Unable to read the directory.')
 
     folderBrowserPath = data.path
     folderBrowserParent = data.parent
-    currentFolderPath.textContent = data.path || '此电脑'
-    currentFolderPath.title = data.path || '此电脑'
+    currentFolderPath.textContent = data.path || 'This PC'
+    currentFolderPath.title = data.path || 'This PC'
     folderUpButton.disabled = !data.path
     confirmFolderButton.disabled = !data.path
     folderList.replaceChildren()
@@ -312,7 +312,7 @@ async function loadFolder (folderPath) {
     if (data.directories.length === 0) {
       const empty = document.createElement('div')
       empty.className = 'folder-empty'
-      empty.textContent = '当前目录没有子文件夹'
+      empty.textContent = 'This directory contains no subfolders'
       folderList.append(empty)
       return
     }
@@ -358,7 +358,7 @@ confirmFolderButton.addEventListener('click', () => {
   localStorage.setItem('nyaa-download-path', downloadPath)
   updateSelectionControls()
   closeFolderDialog()
-  showToast('下载目录已选择')
+  showToast('Download directory selected')
 })
 
 closeFolderButton.addEventListener('click', closeFolderDialog)
@@ -373,7 +373,7 @@ document.addEventListener('keydown', (event) => {
 downloadSelectedButton.addEventListener('click', async () => {
   if (selectedResources.size === 0 || !downloadPath) return
   downloadSelectedButton.disabled = true
-  downloadSelectedButton.textContent = '正在提交…'
+  downloadSelectedButton.textContent = 'Submitting…'
   try {
     const response = await fetch('/api/downloads', {
       method: 'POST',
@@ -398,12 +398,12 @@ downloadSelectedButton.addEventListener('click', async () => {
     if (!response.ok) {
       if (window.AnimeEngine?.handleApiError(response, data)) {
         engineAvailable = false
-        showToast('请先确认并启用内置下载引擎', 'error')
+        showToast('Confirm and enable the bundled download engine first', 'error')
         return
       }
-      throw new Error(data.error || '无法添加下载任务。')
+      throw new Error(data.error || 'Unable to add download tasks.')
     }
-    showToast(`已添加 ${data.count} 个下载任务`)
+    showToast(`Added ${data.count} download task${data.count === 1 ? '' : 's'}`)
     selectedResources.clear()
     resultsContainer.querySelectorAll('.result-select').forEach((checkbox) => {
       checkbox.checked = false
@@ -415,7 +415,7 @@ downloadSelectedButton.addEventListener('click', async () => {
   } catch (error) {
     showToast(error.message, 'error')
   } finally {
-    downloadSelectedButton.textContent = '下载选中项'
+    downloadSelectedButton.textContent = 'Download Selected'
     updateSelectionControls()
   }
 })
@@ -424,18 +424,18 @@ const stoppedStates = new Set(['stoppedDL', 'stoppedUP', 'pausedDL', 'pausedUP']
 const errorStates = new Set(['error', 'missingFiles', 'unknown'])
 
 function stateLabel (state, progress) {
-  if (errorStates.has(state)) return '发生错误'
-  if (stoppedStates.has(state)) return '已暂停'
-  if (state === 'metaDL') return '获取元数据'
-  if (state === 'checkingDL' || state === 'checkingUP' || state === 'checkingResumeData') return '正在校验'
-  if (state === 'queuedDL' || state === 'queuedUP') return '排队中'
-  if (state === 'stalledDL') return '等待连接'
-  if (state === 'stalledUP') return '做种等待'
-  if (state === 'uploading' || state === 'forcedUP') return '做种中'
-  if (state === 'downloading' || state === 'forcedDL') return '下载中'
-  if (state === 'moving') return '移动文件'
-  if (progress >= 100) return '已完成'
-  return state || '状态未知'
+  if (errorStates.has(state)) return 'Error'
+  if (stoppedStates.has(state)) return 'Paused'
+  if (state === 'metaDL') return 'Retrieving metadata'
+  if (state === 'checkingDL' || state === 'checkingUP' || state === 'checkingResumeData') return 'Checking'
+  if (state === 'queuedDL' || state === 'queuedUP') return 'Queued'
+  if (state === 'stalledDL') return 'Waiting for peers'
+  if (state === 'stalledUP') return 'Seeding stalled'
+  if (state === 'uploading' || state === 'forcedUP') return 'Seeding'
+  if (state === 'downloading' || state === 'forcedDL') return 'Downloading'
+  if (state === 'moving') return 'Moving files'
+  if (progress >= 100) return 'Completed'
+  return state || 'Unknown status'
 }
 
 function showDownloadsStatus (title, detail, type = 'normal') {
@@ -463,7 +463,7 @@ async function runTaskAction (button, hash, action) {
       body: JSON.stringify({ hash, action })
     })
     const data = await response.json()
-    if (!response.ok) throw new Error(data.error || '任务操作失败。')
+    if (!response.ok) throw new Error(data.error || 'Task action failed.')
     await refreshDownloads(true)
   } catch (error) {
     showToast(error.message, 'error')
@@ -475,7 +475,7 @@ async function runTaskAction (button, hash, action) {
 function renderDownloads (items) {
   downloadsContainer.replaceChildren()
   if (items.length === 0) {
-    showDownloadsStatus('暂无下载任务', '在上方勾选磁链并选择目录后即可开始下载。')
+    showDownloadsStatus('No download tasks', 'Select releases and choose a directory above to start downloading.')
     return
   }
 
@@ -486,25 +486,25 @@ function renderDownloads (items) {
     const hasError = errorStates.has(item.state)
     card.classList.toggle('stopped', isStopped)
     card.classList.toggle('error', hasError)
-    card.querySelector('.download-name').textContent = item.name || '正在获取磁链元数据…'
+    card.querySelector('.download-name').textContent = item.name || 'Retrieving magnet metadata…'
     card.querySelector('.download-state').textContent = stateLabel(item.state, item.progress)
     card.querySelector('.progress-value').style.width = `${Math.min(100, item.progress)}%`
     card.querySelector('.progress-text').textContent = `${item.progress.toFixed(1)}% · ${formatBytes(item.downloaded)} / ${formatBytes(item.size)}`
     card.querySelector('.download-speed').textContent = `↓ ${formatBytes(item.downloadSpeed)}/s`
     card.querySelector('.upload-speed').textContent = `↑ ${formatBytes(item.uploadSpeed)}/s`
     card.querySelector('.download-eta').textContent = formatEta(item.eta)
-    card.querySelector('.save-path').textContent = `保存到 ${item.savePath}`
+    card.querySelector('.save-path').textContent = `Saved to ${item.savePath}`
     card.querySelector('.save-path').title = item.savePath
 
     const toggleButton = card.querySelector('.toggle-task-button')
-    toggleButton.textContent = isStopped ? '继续' : '暂停'
+    toggleButton.textContent = isStopped ? 'Resume' : 'Pause'
     toggleButton.addEventListener('click', () => {
       runTaskAction(toggleButton, item.hash, isStopped ? 'start' : 'stop')
     })
 
     const removeButton = card.querySelector('.remove-task-button')
     removeButton.addEventListener('click', () => {
-      const shouldRemove = window.confirm('将删除下载任务及其磁盘文件，此操作不可恢复。是否继续？')
+      const shouldRemove = window.confirm('This permanently removes the download task and its files from disk. Continue?')
       if (shouldRemove) runTaskAction(removeButton, item.hash, 'remove')
     })
     fragment.append(card)
@@ -518,7 +518,7 @@ function renderDownloads (items) {
 async function refreshDownloads (silent = false) {
   if (!silent) {
     refreshDownloadsButton.disabled = true
-    engineStatus.textContent = '后台引擎连接中'
+    engineStatus.textContent = 'Connecting to download engine'
   }
   try {
     const response = await fetch('/api/downloads')
@@ -526,23 +526,23 @@ async function refreshDownloads (silent = false) {
     if (!response.ok) {
       if (window.AnimeEngine?.handleApiError(response, data)) {
         engineAvailable = false
-        engineStatus.textContent = '下载引擎尚未启用'
+        engineStatus.textContent = 'Download engine not enabled'
         engineStatus.classList.remove('online')
         updateSelectionControls()
-        if (!silent) showDownloadsStatus('尚未启用下载引擎', '仍可搜索和复制磁链；确认许可后即可添加下载任务。')
+        if (!silent) showDownloadsStatus('Download engine not enabled', 'You can still search and copy magnet links. Confirm the license notice to add download tasks.')
         return
       }
-      throw new Error(data.error || '无法读取下载任务。')
+      throw new Error(data.error || 'Unable to load download tasks.')
     }
     engineAvailable = true
-    engineStatus.textContent = `qBittorrent ${data.engine} · 后台运行`
+    engineStatus.textContent = `qBittorrent ${data.engine} · Running in background`
     engineStatus.classList.add('online')
     updateSelectionControls()
     renderDownloads(data.items)
   } catch (error) {
-    engineStatus.textContent = '后台引擎离线'
+    engineStatus.textContent = 'Download engine offline'
     engineStatus.classList.remove('online')
-    if (!silent) showDownloadsStatus('无法连接下载引擎', error.message, 'error')
+    if (!silent) showDownloadsStatus('Unable to connect to the download engine', error.message, 'error')
   } finally {
     refreshDownloadsButton.disabled = false
   }
@@ -556,7 +556,7 @@ window.addEventListener('anime-engine-state', (event) => {
   updateSelectionControls()
   if (state === 'running') refreshDownloads()
   if (state === 'consent_required') {
-    engineStatus.textContent = '下载引擎尚未启用'
+    engineStatus.textContent = 'Download engine not enabled'
     engineStatus.classList.remove('online')
   }
 })

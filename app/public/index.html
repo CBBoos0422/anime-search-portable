@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,82 +16,82 @@
       <div>
         <p class="eyebrow">ANIME SEARCH</p>
         <h1>Anime Search</h1>
-        <p class="subtitle">搜索、筛选和管理动漫资源，所有操作均在本机完成。</p>
+        <p class="subtitle">Search, filter, and manage anime releases entirely on your computer.</p>
       </div>
-      <nav class="top-nav" aria-label="主导航">
-        <a class="active" href="/">搜索下载</a>
-        <a href="/files.html">分类文件库</a>
-        <a href="/trackers.html">Tracker 管理</a>
-        <button class="exit-app-button" type="button">退出程序</button>
+      <nav class="top-nav" aria-label="Main navigation">
+        <a class="active" href="/">Search &amp; Download</a>
+        <a href="/files.html">File Library</a>
+        <a href="/trackers.html">Tracker Manager</a>
+        <button class="exit-app-button" type="button">Exit App</button>
       </nav>
     </header>
 
     <section class="search-panel" aria-labelledby="search-title">
-      <h2 id="search-title" class="sr-only">搜索条件</h2>
+      <h2 id="search-title" class="sr-only">Search options</h2>
       <form id="search-form">
-        <fieldset class="source-switch" aria-label="搜索来源">
-          <legend>搜索来源</legend>
+        <fieldset class="source-switch" aria-label="Search source">
+          <legend>Search source</legend>
           <label><input type="radio" name="source" value="nyaa" checked><span>Nyaa</span></label>
           <label><input type="radio" name="source" value="animegarden"><span>AnimeGarden</span></label>
-          <label><input type="radio" name="source" value="all"><span>全部来源</span></label>
+          <label><input type="radio" name="source" value="all"><span>All Sources</span></label>
         </fieldset>
         <div class="search-row">
           <label class="search-input-wrap" for="query">
             <span class="search-icon" aria-hidden="true"></span>
             <input id="query" name="query" type="search" maxlength="200"
-              placeholder="输入名称、字幕组或其他关键词…" autocomplete="off" required autofocus>
+              placeholder="Enter a title, release group, or keyword…" autocomplete="off" required autofocus>
           </label>
           <button id="search-button" class="primary-button" type="submit">
-            <span class="button-label">开始搜索</span>
+            <span class="button-label">Search</span>
             <span class="spinner" aria-hidden="true"></span>
           </button>
         </div>
 
         <details class="filters">
-          <summary>筛选与排序</summary>
+          <summary>Filters &amp; Sorting</summary>
           <div class="filter-grid">
             <label class="nyaa-filter">
-              <span>分类</span>
+              <span>Category</span>
               <select id="category" name="category">
-                <option value="1_0">动漫 · 全部</option>
-                <option value="1_1">动漫 · AMV</option>
-                <option value="1_2">动漫 · 英语翻译</option>
-                <option value="1_3">动漫 · 非英语翻译</option>
-                <option value="1_4">动漫 · 生肉</option>
-                <option value="2_0">音频 · 全部</option>
-                <option value="3_0">文学 · 全部</option>
-                <option value="4_0">真人影视 · 全部</option>
-                <option value="5_0">图片 · 全部</option>
-                <option value="6_0">软件 · 全部</option>
+                <option value="1_0">Anime · All</option>
+                <option value="1_1">Anime · AMV</option>
+                <option value="1_2">Anime · English-translated</option>
+                <option value="1_3">Anime · Non-English-translated</option>
+                <option value="1_4">Anime · Raw</option>
+                <option value="2_0">Audio · All</option>
+                <option value="3_0">Literature · All</option>
+                <option value="4_0">Live Action · All</option>
+                <option value="5_0">Pictures · All</option>
+                <option value="6_0">Software · All</option>
               </select>
             </label>
             <label class="nyaa-filter">
-              <span>过滤</span>
+              <span>Filter</span>
               <select id="filter" name="filter">
-                <option value="0">不过滤</option>
-                <option value="1">排除重制</option>
-                <option value="2">仅可信发布</option>
+                <option value="0">No filter</option>
+                <option value="1">Exclude remakes</option>
+                <option value="2">Trusted only</option>
               </select>
             </label>
             <label class="nyaa-filter">
-              <span>排序</span>
+              <span>Sort by</span>
               <select id="sort" name="sort">
-                <option value="id">发布时间</option>
-                <option value="seeders">做种人数</option>
-                <option value="leechers">下载人数</option>
-                <option value="downloads">完成次数</option>
-                <option value="size">文件大小</option>
+                <option value="id">Published</option>
+                <option value="seeders">Seeders</option>
+                <option value="leechers">Leechers</option>
+                <option value="downloads">Completed</option>
+                <option value="size">File size</option>
               </select>
             </label>
             <label class="nyaa-filter">
-              <span>方向</span>
+              <span>Direction</span>
               <select id="direction" name="direction">
-                <option value="desc">从高到低</option>
-                <option value="asc">从低到高</option>
+                <option value="desc">Descending</option>
+                <option value="asc">Ascending</option>
               </select>
             </label>
             <label>
-              <span>结果数量</span>
+              <span>Result limit</span>
               <input id="limit" name="limit" type="number" min="1" max="100" value="10" required>
             </label>
           </div>
@@ -103,37 +103,37 @@
       <div class="results-heading">
         <div>
           <p class="eyebrow">SEARCH RESULTS</p>
-          <h2 id="result-title">等待搜索</h2>
+          <h2 id="result-title">Ready to search</h2>
         </div>
-        <span id="result-count" class="result-count">0 条结果</span>
+        <span id="result-count" class="result-count">0 results</span>
       </div>
 
       <div id="selection-panel" class="selection-panel" hidden>
         <div class="selection-topline">
-          <strong id="selected-count">已选择 0 条</strong>
-          <button id="select-all-button" class="text-button" type="button">全选</button>
+          <strong id="selected-count">0 selected</strong>
+          <button id="select-all-button" class="text-button" type="button">Select all</button>
         </div>
         <div class="download-path-row">
           <label for="download-path">
-            <span>下载到</span>
-            <input id="download-path" type="text" placeholder="请先选择下载目录" readonly>
+            <span>Download to</span>
+            <input id="download-path" type="text" placeholder="Choose a download directory" readonly>
           </label>
-          <button id="choose-folder-button" class="secondary-button" type="button">选择目录</button>
+          <button id="choose-folder-button" class="secondary-button" type="button">Choose Folder</button>
           <label class="download-method-label" for="download-method">
-            <span>下载方式</span>
+            <span>Download method</span>
             <select id="download-method">
-              <option value="magnet">磁力链接</option>
-              <option value="torrent">BT 种子文件</option>
+              <option value="magnet">Magnet link</option>
+              <option value="torrent">Torrent file</option>
             </select>
           </label>
-          <button id="download-selected-button" class="download-button" type="button" disabled>下载选中项</button>
+          <button id="download-selected-button" class="download-button" type="button" disabled>Download Selected</button>
         </div>
       </div>
 
       <div id="status" class="status-card">
         <div class="status-icon" aria-hidden="true">⌕</div>
-        <strong>输入关键词开始搜索</strong>
-        <span>建议使用较具体的关键词获得更准确的结果。</span>
+        <strong>Enter a keyword to begin</strong>
+        <span>Use a specific title or release group for more accurate results.</span>
       </div>
       <div id="results" class="results-list" hidden></div>
     </section>
@@ -142,28 +142,28 @@
       <div class="results-heading">
         <div>
           <p class="eyebrow">DOWNLOAD MANAGER</p>
-          <h2 id="downloads-title">下载任务</h2>
+          <h2 id="downloads-title">Download Tasks</h2>
         </div>
         <div class="download-heading-actions">
-          <span id="engine-status" class="engine-status">后台引擎连接中</span>
-          <button id="refresh-downloads-button" class="text-button" type="button">刷新</button>
+          <span id="engine-status" class="engine-status">Connecting to download engine</span>
+          <button id="refresh-downloads-button" class="text-button" type="button">Refresh</button>
         </div>
       </div>
       <div id="downloads-status" class="status-card compact">
         <div class="status-icon" aria-hidden="true">↓</div>
-        <strong>正在启动后台下载引擎</strong>
-        <span>qBittorrent 不会显示窗口。</span>
+        <strong>Starting the background download engine</strong>
+        <span>qBittorrent runs without a visible window.</span>
       </div>
       <div id="downloads-list" class="downloads-list" hidden></div>
     </section>
 
-    <footer>仅用于搜索你有权获取和分享的内容。</footer>
+    <footer>Search only for content you are authorized to obtain and share.</footer>
   </main>
 
   <template id="result-template">
     <article class="result-card">
       <div class="result-main">
-        <label class="result-checkbox" title="选择此资源">
+        <label class="result-checkbox" title="Select this release">
           <input class="result-select" type="checkbox">
           <span aria-hidden="true"></span>
         </label>
@@ -183,7 +183,7 @@
         </div>
       </div>
       <div class="result-actions">
-        <button class="copy-button" type="button">复制磁链</button>
+        <button class="copy-button" type="button">Copy Magnet</button>
       </div>
     </article>
   </template>
@@ -208,7 +208,7 @@
         <span class="save-path"></span>
         <div class="task-actions">
           <button class="toggle-task-button" type="button"></button>
-          <button class="remove-task-button" type="button">删除任务和文件</button>
+          <button class="remove-task-button" type="button">Remove Task &amp; Files</button>
         </div>
       </div>
     </article>
@@ -221,20 +221,20 @@
       <div class="folder-dialog-header">
         <div>
           <p class="eyebrow">DOWNLOAD LOCATION</p>
-          <h2 id="folder-dialog-title">选择下载目录</h2>
+          <h2 id="folder-dialog-title">Choose Download Directory</h2>
         </div>
-        <button id="close-folder-button" class="dialog-close-button" type="button" aria-label="关闭">×</button>
+        <button id="close-folder-button" class="dialog-close-button" type="button" aria-label="Close">×</button>
       </div>
       <div class="folder-toolbar">
-        <button id="folder-up-button" class="secondary-button" type="button">返回上级</button>
-        <code id="current-folder-path">选择一个磁盘</code>
+        <button id="folder-up-button" class="secondary-button" type="button">Up One Level</button>
+        <code id="current-folder-path">Choose a drive</code>
       </div>
       <div id="folder-list" class="folder-list" aria-live="polite"></div>
       <div class="folder-dialog-footer">
-        <span>双击文件夹进入，选择“使用当前目录”确认。</span>
+        <span>Double-click a folder to open it, then confirm the current directory.</span>
         <div>
-          <button id="cancel-folder-button" class="secondary-button" type="button">取消</button>
-          <button id="confirm-folder-button" class="download-button" type="button" disabled>使用当前目录</button>
+          <button id="cancel-folder-button" class="secondary-button" type="button">Cancel</button>
+          <button id="confirm-folder-button" class="download-button" type="button" disabled>Use This Directory</button>
         </div>
       </div>
     </section>

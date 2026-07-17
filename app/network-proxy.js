@@ -109,11 +109,11 @@ async function findReachableProxyCandidates (candidates = buildProxyCandidates()
 
 function describeNyaaError (error, triedProxy) {
   const code = String(error?.code || '')
-  const message = String(error?.message || '连接失败')
+  const message = String(error?.message || 'connection failed')
   const networkFailure = /ETIMEDOUT|ECONNRESET|ECONNREFUSED|ENETUNREACH|EHOSTUNREACH|timeout|socket hang up/iu.test(`${code} ${message}`)
   if (!networkFailure) return message
-  const attempted = triedProxy ? '已自动尝试本地代理和直接连接。' : '未检测到可用的本地 HTTP 代理。'
-  return `连接超时或被网络阻断。${attempted}请确认代理软件正在运行，或切换到 AnimeGarden。`
+  const attempted = triedProxy ? 'A local proxy and a direct connection were tried automatically. ' : 'No available local HTTP proxy was detected. '
+  return `The connection timed out or was blocked. ${attempted}Check that your proxy application is running, or switch to AnimeGarden.`
 }
 
 module.exports = {

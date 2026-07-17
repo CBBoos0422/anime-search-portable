@@ -72,6 +72,6 @@ test('Nyaa search reports a useful error after proxy and direct retries fail', a
     direction: 'desc'
   }, {
     findReachableProxyCandidates: async () => ['http://127.0.0.1:10808']
-  }), /已自动尝试本地代理和直接连接/u)
+  }), /local proxy and a direct connection were tried automatically/u)
   assert.equal(fakeSi.cli.defaults.proxy, false)
 })
