@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Tracker 管理 · Anime Search</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="background-orb orb-one"></div>
+  <div class="background-orb orb-two"></div>
+  <main class="app-shell tracker-page">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">TRACKER MANAGER</p>
+        <h1>Tracker 管理</h1>
+        <p class="subtitle">为新任务和已有任务配置动漫及公共 BT Tracker。</p>
+      </div>
+      <nav class="top-nav" aria-label="主导航">
+        <a href="/">搜索下载</a>
+        <a href="/files.html">分类文件库</a>
+        <a class="active" href="/trackers.html">Tracker 管理</a>
+        <button class="exit-app-button" type="button">退出程序</button>
+      </nav>
+    </header>
+
+    <section class="tracker-summary-grid" aria-label="Tracker 状态">
+      <article class="summary-card">
+        <span>下载引擎</span>
+        <strong id="tracker-engine-state">正在读取</strong>
+      </article>
+      <article class="summary-card">
+        <span>已配置 Tracker</span>
+        <strong id="configured-count">0</strong>
+      </article>
+      <article class="summary-card">
+        <span>当前下载任务</span>
+        <strong id="torrent-count">0</strong>
+      </article>
+    </section>
+
+    <section class="tracker-layout">
+      <article class="tracker-card">
+        <div class="tracker-card-heading">
+          <div>
+            <p class="eyebrow">RECOMMENDED</p>
+            <h2>常用 Tracker</h2>
+          </div>
+          <button id="use-recommended-button" class="secondary-button" type="button">使用推荐列表</button>
+        </div>
+        <p class="tracker-help">动漫专用节点来自 AnimeGarden 磁链所使用的 Tracker；公共节点用于补充连接来源。</p>
+        <div id="recommended-trackers" class="recommended-trackers"></div>
+        <button id="refresh-online-button" class="secondary-button online-refresh-button" type="button">从在线每日列表刷新</button>
+        <p id="online-source" class="tracker-source-note"></p>
+      </article>
+
+      <article class="tracker-card tracker-editor-card">
+        <div class="tracker-card-heading">
+          <div>
+            <p class="eyebrow">QBITTORRENT</p>
+            <h2>应用到下载引擎</h2>
+          </div>
+        </div>
+        <label class="tracker-editor-label" for="tracker-editor">
+          <span>每行一个 Tracker 地址</span>
+          <textarea id="tracker-editor" spellcheck="false" placeholder="udp://tracker.example:6969/announce"></textarea>
+        </label>
+        <label class="tracker-option">
+          <input id="enable-future" type="checkbox" checked>
+          <span><strong>自动添加到未来任务</strong><small>之后通过磁链或 BT 种子创建的新任务都会使用此列表。</small></span>
+        </label>
+        <label class="tracker-option">
+          <input id="apply-existing" type="checkbox">
+          <span><strong>同时添加到现有任务</strong><small>不会删除任务中已有的 Tracker，也不会修改系统安装的 qBittorrent。</small></span>
+        </label>
+        <div class="tracker-actions">
+          <button id="enable-engine-button" class="secondary-button" type="button" hidden>确认并启用下载引擎</button>
+          <button id="save-trackers-button" class="download-button" type="button">保存并应用</button>
+        </div>
+        <div id="tracker-status" class="tracker-message" role="status" aria-live="polite">正在读取当前配置…</div>
+      </article>
+    </section>
+
+    <footer>Tracker 只帮助 BT 客户端发现其他节点，不托管或提供下载内容。</footer>
+  </main>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/portable.js" defer></script>
+  <script src="/trackers.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>分类文件库 · Anime Search</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="background-orb orb-one"></div>
+  <div class="background-orb orb-two"></div>
+
+  <main class="app-shell library-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">ANIME SEARCH LIBRARY</p>
+        <h1>分类文件库</h1>
+        <p class="subtitle">自动清理文件名中的集数、清晰度和编码等信息，再按资源名称整理查看。</p>
+      </div>
+      <nav class="top-nav" aria-label="主导航">
+        <a href="/">搜索下载</a>
+        <a class="active" href="/files.html">分类文件库</a>
+        <a href="/trackers.html">Tracker 管理</a>
+        <button class="exit-app-button" type="button">退出程序</button>
+      </nav>
+    </header>
+
+    <section class="library-controls" aria-label="文件库工具">
+      <label class="search-input-wrap" for="library-filter">
+        <span class="search-icon" aria-hidden="true"></span>
+        <input id="library-filter" type="search" placeholder="按资源名称、任务名称或文件名筛选…" autocomplete="off">
+      </label>
+      <button id="library-refresh-button" class="primary-button" type="button">刷新文件库</button>
+    </section>
+
+    <section class="library-summary" aria-live="polite">
+      <div><span id="category-total">0</span><small>资源分组</small></div>
+      <div><span id="torrent-total">0</span><small>下载任务</small></div>
+      <div><span id="file-total">0</span><small>相关文件</small></div>
+      <div><span id="playable-total">0</span><small>可播放媒体</small></div>
+    </section>
+
+    <section aria-labelledby="library-title">
+      <div class="results-heading library-heading">
+        <div>
+          <p class="eyebrow">GROUPED CONTENT</p>
+          <h2 id="library-title">我的下载文件</h2>
+        </div>
+        <span id="library-updated" class="result-count">正在读取…</span>
+      </div>
+
+      <div id="library-status" class="status-card compact">
+        <div class="status-icon" aria-hidden="true">▦</div>
+        <strong>正在加载分类文件库</strong>
+        <span>下载引擎会在后台自动连接。</span>
+      </div>
+      <div id="library-groups" class="library-groups" hidden></div>
+    </section>
+
+    <footer>播放按钮会调用 Windows 当前为该格式设置的默认播放器。</footer>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/portable.js" defer></script>
+  <script src="/files.js" defer></script>
+</body>
+</html>
