@@ -90,6 +90,7 @@ Remove-Safe $stage
 New-Item -ItemType Directory -Force -Path $packageRoot | Out-Null
 
 Copy-Item -LiteralPath (Join-Path $root 'app') -Destination $packageRoot -Recurse
+Copy-Item -LiteralPath (Join-Path $root 'docs') -Destination $packageRoot -Recurse
 Copy-Item -LiteralPath (Join-Path $root 'node_modules') -Destination $packageRoot -Recurse
 Copy-Item -LiteralPath (Join-Path $root 'vendor') -Destination $packageRoot -Recurse
 Copy-Item -LiteralPath (Join-Path $root 'licenses') -Destination $packageRoot -Recurse
