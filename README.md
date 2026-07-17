@@ -25,6 +25,8 @@ Anime Search is a local Windows web app for searching Nyaa and AnimeGarden, copy
 
 This repository intentionally excludes `vendor`, `node_modules`, `runtime`, build output, and third-party binaries. If a complete portable package is published, it belongs in GitHub Releases rather than Git history.
 
+> **New here?** Read the [Source Repository Usage Guide](docs/SOURCE_USAGE.md) for installation, first-run behavior, feature availability, and troubleshooting.
+
 ## Run from Source
 
 Requirements: Windows 10/11 x64, Node.js 24, and npm.
@@ -38,6 +40,8 @@ npm run server
 ```
 
 Open <http://127.0.0.1:4173/>. If you have not prepared the download engine in source mode, choose **Not now** in the first-run prompt; search and copy features remain available.
+
+For detailed instructions, including how to use copied magnet links with a separately installed BitTorrent client, see [docs/SOURCE_USAGE.md](docs/SOURCE_USAGE.md).
 
 Available commands:
 
